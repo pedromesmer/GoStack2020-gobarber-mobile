@@ -8,7 +8,8 @@ interface InputProps extends TextInputProps {
   icon: string;
 }
 
-const Input: React.FC<InputProps> = ({ name, icon, ...rest }) => (
+// eslint-disable-next-line react/prop-types
+const Input: React.FC<InputProps> = ({ /* name, */ icon, ...rest }) => (
   <Container>
     <Icon name={icon} size={20} color="#666360" />
     <TextInput placeholderTextColor="#666360" {...rest} />
