@@ -15,6 +15,7 @@ import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 
 import getValidationErrors from '../../utils/getValidationErrors';
+import api from '../../services/api';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -52,27 +53,25 @@ const SignUp: React.FC = () => {
 
         await schema.validate(data, { abortEarly: false });
 
-        // await api.post('/users', data);
-
-        // history.push('/');
+        await api.post('/users', data);
 
         Alert.alert(
           'Cadastro realizado',
           'Você ja pode fazer o seu logon no GoBarber',
         );
+
+        navigation.navigate('SignIn');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
           formRef.current?.setErrors(errors);
           return;
         }
-        Alert.alert(
-          'Erro nno cadastro',
-          'Ocorreu um erro ao fazer o cadastro, tente novamente.',
-        );
+
+        Alert.alert('Erro no cadastro', err.message);
       }
     },
-    [],
+    [navigation],
   );
 
   return (
@@ -101,7 +100,7 @@ const SignUp: React.FC = () => {
               <Input
                 name="name"
                 icon="user"
-                placeholder="Nomel"
+                placeholder="Nome"
                 autoCorrect
                 autoCapitalize="words"
                 returnKeyType="next"
@@ -129,7 +128,9 @@ const SignUp: React.FC = () => {
                 onSubmitEditing={formRef.current?.submitForm}
               />
 
-              <Button onPress={formRef.current?.submitForm}>Entrar</Button>
+              <Button onPress={() => formRef.current?.submitForm()}>
+                Entrar
+              </Button>
             </Form>
           </Container>
         </ScrollView>

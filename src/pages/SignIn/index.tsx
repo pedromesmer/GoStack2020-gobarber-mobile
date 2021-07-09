@@ -119,7 +119,9 @@ const SignIn: React.FC = () => {
                 returnKeyType="send"
                 onSubmitEditing={formRef.current?.submitForm}
               />
-              <Button onPress={formRef.current?.submitForm}>Entrar</Button>
+              <Button onPress={() => formRef.current?.submitForm()}>
+                Entrar
+              </Button>
             </Form>
 
             <ForgotPassword
