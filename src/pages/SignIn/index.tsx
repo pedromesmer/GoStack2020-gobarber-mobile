@@ -6,11 +6,15 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
+
+import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -26,15 +30,50 @@ import {
   CreateAccountButtonText,
 } from './style';
 
+interface SignInFormData {
+  email: string;
+  passoword: string;
+}
+
 const SignIn: React.FC = () => {
   const navigation = useNavigation();
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  const handleSingIn = useCallback((data: object) => {
-    console.log(data);
-  }, []);
+  const handleSignIn = useCallback(
+    async (data: SignInFormData): Promise<void> => {
+      try {
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('Email obrigatório')
+            .email('Digite um email válido'),
+          password: Yup.string().required('Senha obrogatória'),
+        });
+
+        await schema.validate(data, { abortEarly: false });
+
+        // await signIn({
+        //   email: data.email,
+        //   password: data.password,
+        // });
+
+        // history.push('/dashboard');
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+        Alert.alert(
+          'Erro na autenticação',
+          'Ocorreu um erro ao fazer o login, cheque suas credenciais.',
+        );
+      }
+    },
+    [],
+  );
 
   return (
     <>
@@ -57,7 +96,7 @@ const SignIn: React.FC = () => {
             <Form
               style={{ width: '100%' }}
               ref={formRef}
-              onSubmit={handleSingIn}
+              onSubmit={handleSignIn}
             >
               <Input
                 autoCorrect={false}
